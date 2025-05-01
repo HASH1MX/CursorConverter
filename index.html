@@ -278,7 +278,7 @@
 
     <script>
         const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
+        let fileInput = document.getElementById('fileInput');
         const previewContainer = document.getElementById('previewContainer');
         const previewImage = document.getElementById('previewImage');
         const convertToPng = document.getElementById('convertToPng');
@@ -289,6 +289,15 @@
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
 
+        // Function to add file input event listener
+        function setupFileInput() {
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
+
         // Function to show drop zone
         function showDropZone() {
             dropZone.classList.remove('hidden');
@@ -297,18 +306,9 @@
                 <p>or click to browse files</p>
                 <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display: none;">
             `;
-            // Reassign fileInput and add event listener
+            // Reassign fileInput and set up event listener
             fileInput = document.getElementById('fileInput');
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleFile(e.target.files[0]);
-                }
-            });
-        }
-
-        // Function to hide drop zone
-        function hideDropZone() {
-            dropZone.classList.add('hidden');
+            setupFileInput();
         }
 
         function handleFile(file) {
@@ -378,8 +378,9 @@
             img.src = URL.createObjectURL(currentFile);
         }
 
-        // Initialize drop zone on page load
+        // Initialize drop zone and file input on page load
         showDropZone();
+        setupFileInput();
 
         // Rest of your event listeners remain the same
         dropZone.addEventListener('dragover', (e) => {
