@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Format Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #666;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .convert-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .convert-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+        .preview {
+            max-width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Format Converter</h1>
+        <div class="upload-area" id="dropZone">
+            <p>Drop your image here or click to select</p>
+            <p style="font-size: 0.9em; color: #666;">(JPG or PNG files only)</p>
+            <input type="file" id="fileInput" accept=".jpg,.jpeg,.png" style="display: none">
+        </div>
+        <div class="preview" id="preview"></div>
+        <div class="button-group">
+            <button id="convertToPng" class="convert-btn" disabled>Convert to PNG</button>
+            <button id="convertToJpg" class="convert-btn" disabled>Convert to JPG</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const convertToPng = document.getElementById('convertToPng');
+        const convertToJpg = document.getElementById('convertToJpg');
+        const status = document.getElementById('status');
+        const preview = document.getElementById('preview');
+        let selectedFile = null;
+
+        // Handle file selection
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#666';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#ccc';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#ccc';
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                status.textContent = 'Please select a JPG or PNG file.';
+                convertToPng.disabled = true;
+                convertToJpg.disabled = true;
+                preview.innerHTML = '';
+                return;
+            }
+
+            selectedFile = file;
+            status.textContent = `Selected: ${file.name}`;
+            
+            // Enable appropriate conversion button
+            convertToPng.disabled = file.type === 'image/png';
+            convertToJpg.disabled = file.type === 'image/jpeg' || file.type === 'image/jpg';
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Handle conversion
+        async function convertImage(targetFormat) {
+            if (!selectedFile) return;
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            formData.append('format', targetFormat);
+
+            status.textContent = 'Converting...';
+            convertToPng.disabled = true;
+            convertToJpg.disabled = true;
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Conversion failed');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = selectedFile.name.replace(/\.[^/.]+$/, '') + '.' + targetFormat;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                status.textContent = `Conversion successful! ${targetFormat.toUpperCase()} file downloaded.`;
+            } catch (error) {
+                status.textContent = 'Error: ' + error.message;
+            } finally {
+                // Re-enable appropriate conversion button
+                convertToPng.disabled = selectedFile.type === 'image/png';
+                convertToJpg.disabled = selectedFile.type === 'image/jpeg' || selectedFile.type === 'image/jpg';
+            }
+        }
+
+        convertToPng.addEventListener('click', () => convertImage('png'));
+        convertToJpg.addEventListener('click', () => convertImage('jpg'));
+    </script>
+</body>
+</html> 
