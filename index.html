@@ -4,32 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Format Converter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            --background-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --surface-color: rgba(255, 255, 255, 0.9);
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --border-radius: 24px;
+            --bg-primary: #0a0b0f;
+            --bg-secondary: #12141c;
+            --accent-primary: #00ffd5;
+            --accent-secondary: #7000ff;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --neon-shadow: 0 0 10px rgba(0, 255, 213, 0.3),
+                          0 0 20px rgba(0, 255, 213, 0.2),
+                          0 0 30px rgba(0, 255, 213, 0.1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
             min-height: 100vh;
-            background: var(--background-gradient);
+            background: var(--bg-primary);
             color: var(--text-primary);
             display: flex;
             flex-direction: column;
@@ -40,35 +40,49 @@
             overflow-x: hidden;
         }
 
-        body::before {
+        body::before, body::after {
             content: '';
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
-            animation: rotate 30s linear infinite;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
             z-index: -1;
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        body::before {
+            top: -100px;
+            left: -100px;
+            background: var(--accent-primary);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            bottom: -100px;
+            right: -100px;
+            background: var(--accent-secondary);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(50px, 50px); }
+            50% { transform: translate(0, 100px); }
+            75% { transform: translate(-50px, 50px); }
         }
 
         .container {
             max-width: 900px;
             width: 100%;
-            background: var(--surface-color);
+            background: var(--bg-secondary);
             padding: 3rem;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            animation: fadeIn 0.6s ease-out;
+            border: 1px solid rgba(0, 255, 213, 0.1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .container::before {
@@ -77,8 +91,13 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--primary-gradient);
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--accent-primary),
+                var(--accent-secondary),
+                transparent
+            );
         }
 
         @keyframes fadeIn {
@@ -94,54 +113,41 @@
 
         h1 {
             text-align: center;
-            font-size: 2.8rem;
-            font-weight: 700;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 2.5rem;
             margin-bottom: 2.5rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--primary-gradient);
-            border-radius: 2px;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px rgba(0, 255, 213, 0.5);
         }
 
         .drop-zone {
-            border: 3px dashed #6366f1;
+            border: 2px dashed rgba(0, 255, 213, 0.3);
             border-radius: var(--border-radius);
             padding: 3.5rem 2rem;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
             margin-bottom: 2.5rem;
-            background: rgba(99, 102, 241, 0.03);
+            background: rgba(0, 255, 213, 0.02);
             position: relative;
             overflow: hidden;
         }
 
         .drop-zone:hover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 255, 213, 0.05);
             transform: translateY(-2px);
-            border-color: #8b5cf6;
-            background: rgba(99, 102, 241, 0.05);
+            box-shadow: var(--neon-shadow);
         }
 
         .drop-zone.dragover {
             transform: scale(1.02);
-            border-color: #8b5cf6;
-            background: rgba(99, 102, 241, 0.08);
-            box-shadow: var(--shadow-md);
+            border-color: var(--accent-primary);
+            background: rgba(0, 255, 213, 0.08);
+            box-shadow: var(--neon-shadow);
         }
 
         .drop-zone p {
@@ -155,22 +161,6 @@
             font-size: 0.95rem;
             color: var(--text-secondary);
             font-weight: normal;
-        }
-
-        .drop-zone::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-            transform: scale(0);
-            transition: var(--transition);
-        }
-
-        .drop-zone:hover::before {
-            transform: scale(1);
         }
 
         .preview-container {
@@ -195,14 +185,14 @@
             max-width: 100%;
             max-height: 350px;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 255, 213, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transition: var(--transition);
-            border: 2px solid rgba(99, 102, 241, 0.1);
         }
 
         .preview-image:hover {
             transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--neon-shadow);
         }
 
         .button-group {
@@ -216,8 +206,11 @@
             padding: 1rem 2rem;
             border: none;
             border-radius: var(--border-radius);
-            background: var(--primary-gradient);
-            color: white;
+            background: linear-gradient(135deg, 
+                var(--accent-primary) 0%, 
+                var(--accent-secondary) 100%
+            );
+            color: var(--bg-primary);
             cursor: pointer;
             transition: var(--transition);
             font-size: 1.1rem;
@@ -225,19 +218,20 @@
             min-width: 180px;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--neon-shadow);
         }
 
         button:disabled {
-            background: #e2e8f0;
+            background: #2a2d3a;
             cursor: not-allowed;
             transform: none;
-            color: #94a3b8;
+            color: var(--text-secondary);
         }
 
         button::before {
@@ -271,11 +265,13 @@
         }
 
         .status.success {
-            color: #059669;
+            color: var(--accent-primary);
+            text-shadow: 0 0 10px rgba(0, 255, 213, 0.5);
         }
 
         .status.error {
-            color: #dc2626;
+            color: #ff4757;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
         }
 
         @media (max-width: 768px) {
@@ -288,7 +284,7 @@
             }
 
             h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
 
             .drop-zone {
