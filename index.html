@@ -107,6 +107,10 @@
             gap: 0.5rem;
         }
 
+        .drop-zone.hidden {
+            display: none;
+        }
+
         .drop-zone p {
             margin: 0;
             line-height: 1.5;
@@ -285,64 +289,27 @@
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
 
-        // Drag and drop handlers
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
+        // Function to show drop zone
+        function showDropZone() {
+            dropZone.classList.remove('hidden');
+            dropZone.innerHTML = `
+                <p>Drop your image here</p>
+                <p>or click to browse files</p>
+                <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display: none;">
+            `;
+            // Reassign fileInput and add event listener
+            fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
-
-        dropZone.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
-        // Add click handler for preview image
-        previewImage.addEventListener('click', () => {
-            modalImage.src = previewImage.src;
-            imageModal.style.display = 'block';
-            // Small delay to ensure display is set before adding active class
-            setTimeout(() => {
-                imageModal.classList.add('active');
-            }, 10);
-        });
-
-        // Close modal when clicking outside the image
-        imageModal.addEventListener('click', (e) => {
-            if (e.target === imageModal) {
-                imageModal.classList.remove('active');
-                setTimeout(() => {
-                    imageModal.style.display = 'none';
-                }, 300);
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && imageModal.style.display === 'block') {
-                imageModal.classList.remove('active');
-                setTimeout(() => {
-                    imageModal.style.display = 'none';
-                }, 300);
-            }
-        });
+        // Function to hide drop zone
+        function hideDropZone() {
+            dropZone.classList.add('hidden');
+        }
 
         function handleFile(file) {
             if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
@@ -356,7 +323,7 @@
             reader.onload = (e) => {
                 previewImage.src = e.target.result;
                 previewContainer.style.display = 'block';
-                dropZone.innerHTML = ''; // Clear the drop zone text
+                hideDropZone(); // Hide the drop zone when image is loaded
                 convertToPng.disabled = file.type === 'image/png';
                 convertToJpg.disabled = file.type === 'image/jpeg';
                 status.textContent = '';
@@ -364,25 +331,6 @@
             };
             reader.readAsDataURL(file);
         }
-
-        // Add function to reset the drop zone
-        function resetDropZone() {
-            dropZone.innerHTML = `
-                <p>Drop your image here</p>
-                <p>or click to browse files</p>
-                <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display: none;">
-            `;
-            fileInput = document.getElementById('fileInput'); // Reassign fileInput reference
-            // Reattach event listener to new fileInput
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    handleFile(e.target.files[0]);
-                }
-            });
-        }
-
-        convertToPng.addEventListener('click', () => convertImage('png'));
-        convertToJpg.addEventListener('click', () => convertImage('jpeg'));
 
         function convertImage(targetFormat) {
             if (!currentFile) return;
@@ -420,7 +368,7 @@
                     // Reset the interface after conversion
                     setTimeout(() => {
                         previewContainer.style.display = 'none';
-                        resetDropZone();
+                        showDropZone(); // Show drop zone after conversion
                         currentFile = null;
                         status.textContent = '';
                     }, 2000);
@@ -429,6 +377,65 @@
 
             img.src = URL.createObjectURL(currentFile);
         }
+
+        // Initialize drop zone on page load
+        showDropZone();
+
+        // Rest of your event listeners remain the same
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Add click handler for preview image
+        previewImage.addEventListener('click', () => {
+            modalImage.src = previewImage.src;
+            imageModal.style.display = 'block';
+            // Small delay to ensure display is set before adding active class
+            setTimeout(() => {
+                imageModal.classList.add('active');
+            }, 10);
+        });
+
+        // Close modal when clicking outside the image
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.remove('active');
+                setTimeout(() => {
+                    imageModal.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageModal.style.display === 'block') {
+                imageModal.classList.remove('active');
+                setTimeout(() => {
+                    imageModal.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        convertToPng.addEventListener('click', () => convertImage('png'));
+        convertToJpg.addEventListener('click', () => convertImage('jpeg'));
     </script>
 </body>
 </html> 
