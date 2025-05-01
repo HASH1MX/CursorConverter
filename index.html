@@ -356,12 +356,29 @@
             reader.onload = (e) => {
                 previewImage.src = e.target.result;
                 previewContainer.style.display = 'block';
+                dropZone.innerHTML = ''; // Clear the drop zone text
                 convertToPng.disabled = file.type === 'image/png';
                 convertToJpg.disabled = file.type === 'image/jpeg';
                 status.textContent = '';
                 status.className = 'status';
             };
             reader.readAsDataURL(file);
+        }
+
+        // Add function to reset the drop zone
+        function resetDropZone() {
+            dropZone.innerHTML = `
+                <p>Drop your image here</p>
+                <p>or click to browse files</p>
+                <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display: none;">
+            `;
+            fileInput = document.getElementById('fileInput'); // Reassign fileInput reference
+            // Reattach event listener to new fileInput
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
         }
 
         convertToPng.addEventListener('click', () => convertImage('png'));
@@ -399,6 +416,14 @@
                     
                     status.textContent = 'Conversion complete! ✨';
                     status.className = 'status success';
+                    
+                    // Reset the interface after conversion
+                    setTimeout(() => {
+                        previewContainer.style.display = 'none';
+                        resetDropZone();
+                        currentFile = null;
+                        status.textContent = '';
+                    }, 2000);
                 }, mimeType, quality);
             };
 
