@@ -14,7 +14,7 @@ A modern web application for converting images between JPG and PNG formats. Buil
 - High-quality image conversion using Sharp library
 - Cross-browser compatibility
 
-## Technologies Used
+# Technologies Used
 
 - Frontend: HTML5, CSS3, JavaScript (Vanilla)
 - Backend: Node.js with Express
