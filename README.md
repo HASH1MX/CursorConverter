@@ -14,7 +14,7 @@ A modern web application for converting images between JPG and PNG formats. Buil
 - High-quality image conversion using Sharp library
 - Cross-browser compatibility
 
-# Technologies Used
+## Technologies Used
 
 - Frontend: HTML5, CSS3, JavaScript (Vanilla)
 - Backend: Node.js with Express
@@ -29,7 +29,7 @@ Before running this application, make sure you have:
 - npm (Node Package Manager)
 - A modern web browser (Chrome, Firefox, Safari, or Edge)
 
-## Installation
+### Installation
 
 1. Clone the repository:
 ```bash
@@ -42,7 +42,7 @@ cd image-format-converter
 npm install
 ```
 
-## Running the Application
+### Running the Application
 
 1. Start the server:
 ```bash
@@ -66,13 +66,11 @@ http://localhost:3000
    - Use "Convert to JPG" for PNG images
 5. The converted file will automatically download to your default downloads folder
 
-## User Interface Features
+### User Interface Features
 
 - Dynamic drop zone with visual feedback
 - Real-time file type validation
 - Smooth animations and transitions
-- Responsive design that works on all screen sizes
-- Clear visual feedback for all user actions
 - Modern, minimalist aesthetic
 
 ## Troubleshooting
